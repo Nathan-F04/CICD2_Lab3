@@ -2,7 +2,6 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
 from app.main import app, get_db
 from app.models import Base
 
@@ -19,13 +18,12 @@ def client():
             yield db
         finally:
             db.close()
-    app.dependency_overrides[get_db] = override_get_db
+            app.dependency_overrides[get_db] = override_get_db
     with TestClient(app) as c:
         # hand the client to the test
         yield c
         # --- teardown happens when the 'with' block exits ---
 
 def test_create_user(client):
-    r = client.post("/api/users",
-json={"name":"Paul","email":"pl@atu.ie","age":25,"student_id":"S1234567"})
+    r = client.post("/api/users", json={"name":"Paul","email":"pl@atu.ie","age":25,"student_id":"S1234567"})
     assert r.status_code == 201
